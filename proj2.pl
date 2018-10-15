@@ -1,3 +1,12 @@
+:- initialization main.
+:- use_module(library(readutil)).
+
+/* executar com: swipl -q -g main proj2.pl < trechos  */
+
+main :-     
+    read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n", "", LINES), list_trechos(LINES, X), print(X). 
+
+
 tam([],0).
 tam([_|XS], T) :- tam(XS, TT), T is TT+1.
 
