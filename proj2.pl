@@ -1,24 +1,31 @@
-% :- initialization main.
-% :- use_module(library(readutil)).
-%
-% /* executar com: swipl -q -g main proj2.pl < trechos  */
-%
-% main :-
-%     read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", LINES), exclude(not_empty(""), LINES, [X|XS]),
-%     list_trechos([X|XS], Y), find_smallest(Y, _, OUTPUT),
-%     print(OUTPUT).
-%     /* findall([X|XS], find_matches(TRECHOS, [X|XS]),TRECHOS),*/
-%
-%     /* read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", ), tam(['a','a','a','a','a','a'], C), find_smallest([['a','a'],['a','a','a'],['a','a','a','a']], C, R), print(R). */
-%
-% equal(X, Y) :- X == Y.
-%
-% tam([],0).
-% tam([_|XS], T) :- tam(XS, TT), T is TT+1.
-%
-% find_smallest([X], C, X) :- tam(X, C).
-% find_smallest([X|XS], CC, RR) :- find_smallest(XS, C, R), tam(X, T), T < C  -> RR = R, CC = C
-%                                                                             ; RR = X, CC = T.
+:- initialization main.
+:- use_module(library(readutil)).
+
+/* executar com: swipl -q -g main proj2.pl < trechos  */
+
+main :-
+    read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", LINES), exclude(equal(""), LINES, [X|XS]),
+    print([X|XS]).
+    /* maplist(writeln, ['abc','dsadas','aaaaa']) */
+
+equal(X, Y) :- X == Y.
+
+tam([],0).
+tam([_|XS], T) :- tam(XS, TT), T is TT+1.
+
+send_test(X, [], _, _) :- fail.
+send_test(X, [Y|YS], TOBEREMOVED, CONCAT) :- match(X, Y, RESULT)    ->  TOBEREMOVED = Y, CONCAT = RESULT
+                                                                    ;   send_test(X, YS, TOBEREMOVED, CONCAT).
+
+find_matches_aux([X], [X]).
+find_matches_aux([X|XS], RR) :- send_test(X, XS, TOBEREMOVED, CONCAT)   ->  exclude(equal(TOBEREMOVED),XS, NEWTRECHOS), find_matches_aux([CONCAT|NEWTRECHOS], RR)
+                                                                        ;   find_matches(XS, R), RR is [X|R].
+
+find_matches(TRECHOS, RESULT) :- find_matches_aux(TRECHOS, _, RESULT).
+
+find_smallest([X], C, X) :- tam(X, C).
+find_smallest([X|XS], CC, RR) :- find_smallest(XS, C, R), tam(X, T), T < C  -> RR = R, CC = C
+                                                                            ; RR = X, CC = T.
 
 /*Pega todos os posfixos de uma lista, com tam >= 4
 L: lista com os caracteres da string
