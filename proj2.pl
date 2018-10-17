@@ -3,9 +3,10 @@
 
 /* executar com: swipl -q -g main proj2.pl < trechos  */
 
-main :-     
-    read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n", "", LINES), list_trechos(LINES, X), print(X). 
+main :-
+   read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", LINES), exclude(not_empty(""), LINES, [X|XS]), list_trechos([X|XS], OUT), print(OUT).
 
+not_empty(X, Y) :- X == Y.
 
 tam([],0).
 tam([_|XS], T) :- tam(XS, TT), T is TT+1.
@@ -17,7 +18,7 @@ ACC: acumulador para montar a lista de posfixos*/
 all_postfix(L, R) :- all_postfix(L, R, [L]).
 
 all_postfix([], ACC, ACC).
-all_postfix([X|XS], R, ACC) :- tam(XS, T), T >= 4 -> append(ACC, [XS], ACC1), all_postfix(XS, R, ACC1)
+all_postfix([_|XS], R, ACC) :- tam(XS, T), T >= 4 -> append(ACC, [XS], ACC1), all_postfix(XS, R, ACC1)
                                                   ;all_postfix(XS, R, ACC).
 
 /*Pega todos os prefixos de uma lista, com tam >= 4
@@ -27,7 +28,7 @@ ACC: acumulador para montar a lista de prefixos*/
 all_prefix(L, R) :- reverse(L, V), all_prefix(V, R, [L]).
 
 all_prefix([], ACC, ACC).
-all_prefix([X|XS], R, ACC) :- tam(XS, T), T >= 4 -> reverse(XS, V), append(ACC, [V], ACC1), all_prefix(XS, R, ACC1)
+all_prefix([_|XS], R, ACC) :- tam(XS, T), T >= 4 -> reverse(XS, V), append(ACC, [V], ACC1), all_prefix(XS, R, ACC1)
                                                   ;all_prefix(XS, R, ACC).
 
 /*Pega todos os prefixos e posfixos das strings
