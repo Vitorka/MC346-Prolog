@@ -22,10 +22,6 @@ find_matches([X], [X]).
 find_matches([X|XS], RR) :- send_test(X, XS, TOBEREMOVED, CONCAT)   ->  exclude(equal(TOBEREMOVED),XS, NEWTRECHOS), find_matches([CONCAT|NEWTRECHOS], RR)
                                                                         ;   find_matches(XS, R), RR = [X|R].
 
-find_smallest([X], C, X) :- tam(X, C).
-find_smallest([X|XS], CC, RR) :- find_smallest(XS, C, R), tam(X, T), T < C  -> RR = R, CC = C
-                                                                            ; RR = X, CC = T.
-
 /*Funcao que encontra o match de prefixo e sufixo entre dois trechos e une
 [X|XS] e T1: Trecho 1 - Verfica sufixo
 [Y|YS] e T2: Trecho 2 - Verfica prefixo*/
