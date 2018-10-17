@@ -1,24 +1,24 @@
-:- initialization main.
-:- use_module(library(readutil)).
-
-/* executar com: swipl -q -g main proj2.pl < trechos  */
-
-main :-
-    read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", LINES), exclude(not_empty(""), LINES, [X|XS]),
-    list_trechos([X|XS], Y), find_smallest(Y, _, OUTPUT),
-    print(OUTPUT).
-    /* findall([X|XS], find_matches(TRECHOS, [X|XS]),TRECHOS),*/
-
-    /* read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", ), tam(['a','a','a','a','a','a'], C), find_smallest([['a','a'],['a','a','a'],['a','a','a','a']], C, R), print(R). */
-
-not_empty(X, Y) :- X == Y.
-
-tam([],0).
-tam([_|XS], T) :- tam(XS, TT), T is TT+1.
-
-find_smallest([X], C, X) :- tam(X, C).
-find_smallest([X|XS], CC, RR) :- find_smallest(XS, C, R), tam(X, T), T < C  -> RR = R, CC = C
-                                                                            ; RR = X, CC = T.
+% :- initialization main.
+% :- use_module(library(readutil)).
+%
+% /* executar com: swipl -q -g main proj2.pl < trechos  */
+%
+% main :-
+%     read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", LINES), exclude(not_empty(""), LINES, [X|XS]),
+%     list_trechos([X|XS], Y), find_smallest(Y, _, OUTPUT),
+%     print(OUTPUT).
+%     /* findall([X|XS], find_matches(TRECHOS, [X|XS]),TRECHOS),*/
+%
+%     /* read_string(user_input, _, RAWINPUT), split_string(RAWINPUT, "\n\r", "", ), tam(['a','a','a','a','a','a'], C), find_smallest([['a','a'],['a','a','a'],['a','a','a','a']], C, R), print(R). */
+%
+% equal(X, Y) :- X == Y.
+%
+% tam([],0).
+% tam([_|XS], T) :- tam(XS, TT), T is TT+1.
+%
+% find_smallest([X], C, X) :- tam(X, C).
+% find_smallest([X|XS], CC, RR) :- find_smallest(XS, C, R), tam(X, T), T < C  -> RR = R, CC = C
+%                                                                             ; RR = X, CC = T.
 
 /*Pega todos os posfixos de uma lista, com tam >= 4
 L: lista com os caracteres da string
@@ -72,7 +72,23 @@ une_trechos(T1, T2, [], UN) :- append(T2, T1, UN), !.
 une_trechos(T1, T2, EQUAL, UN) :- T1=[X|XS], EQUAL=[Y|YS], X=Y,
                                   une_trechos(XS, T2, YS, UN), !.
 
+
+/*Encontra todas as solucoes de juncao possiveis*/
+solucoes([X|_], DISPONIVEIS, SOLUCOES) :- exclude(not_equal(X), DISPONIVEIS, SOLUCOES).
+
+/*[trecho2("xxxxxababababyyyyyy"), trecho2("yyaaaaaaaaaaa")]*/
+
 teste(L, EQUAL, UN) :- list_trechos(L, [trecho(TX, PRX, _), trecho(TY, _, POY)|_]),
                    verifica_pref_postf(PRX, POY, EQUAL),
                    string_chars(TX, T1), string_chars(TY, T2),
                    une_trechos(T1, T2, EQUAL, UNN), string_chars(UN, UNN), !.
+
+
+/*Funcao que encontra o match de prefixo e sufixo entre dois trechos e une
+[X|XS] e T1: Trecho 1 - Verfica sufixo
+[Y|YS] e T2: Trecho 2 - Verfica prefixo*/
+match(T1, T2, UNIAO) :- match(T1, T2, UNIAO, T2, 0).
+
+match([], T2, T2, _, ACC) :- ACC >= 4.
+match([X|XS], [Y|YS], UNIAO, T2AUX, ACC) :- X==Y -> ACC1 is (ACC + 1), match(XS, YS, UNIAO, T2AUX, ACC1)
+                                                  ; ACC1=0, match(XS, T2AUX, UNIAO, T2AUX, ACC1).
