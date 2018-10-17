@@ -14,7 +14,7 @@ tam([],0).
 tam([_|XS], T) :- tam(XS, TT), T is TT+1.
 
 send_test(X, [], _, _) :- fail.
-send_test(X, [Y|YS], TOBEREMOVED, CONCAT) :- match(X, Y, RESULT)    ->  TOBEREMOVED = Y, CONCAT = RESULT
+send_test(X, [Y|YS], TOBEREMOVED, CONCAT) :- match(X, Y, TOBECONCAT)    ->  TOBEREMOVED = Y, append(X, TOBECONCAT, CONCAT)
                                                                     ;   send_test(X, YS, TOBEREMOVED, CONCAT).
 
 find_matches_aux([X], [X]).
